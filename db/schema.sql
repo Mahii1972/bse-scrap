@@ -29,7 +29,25 @@ CREATE TABLE bse500_distribution (
     UNIQUE(date_captured)
 );
 
+CREATE TABLE market_data (
+    id SERIAL PRIMARY KEY,
+    index_name VARCHAR(50) NOT NULL,    -- e.g., 'NIFTY50', 'BSE500'
+    date DATE NOT NULL,
+    open DECIMAL(16,2) NOT NULL,
+    high DECIMAL(16,2) NOT NULL,
+    low DECIMAL(16,2) NOT NULL,
+    close DECIMAL(16,2) NOT NULL,
+    volume BIGINT NOT NULL,
+    change_percent DECIMAL(8,4),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
 -- Create indexes for better query performance
 CREATE INDEX idx_sectoral_date ON sectoral_performance(date_captured);
 CREATE INDEX idx_sectoral_duration ON sectoral_performance(duration);
 CREATE INDEX idx_bse_date ON bse500_distribution(date_captured);
+CREATE INDEX idx_market_data_date ON market_data(date);
+
+ALTER TABLE market_data ADD CONSTRAINT unique_market_data_date 
+    UNIQUE (index_name, date);

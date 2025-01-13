@@ -1,8 +1,10 @@
 from scrapers.bse_scraper import scrape_5paisa_bse500
 from scrapers.sector_scraper import fetch_moneycontrol_sectors
+from scrapers.hist_scrape import fetch_historical_market_data
 from db.db import execute_query, execute_batch_query
 import json
-from datetime import date
+from datetime import date, datetime, timedelta
+import time
 
 def main():
     try:
@@ -67,6 +69,54 @@ def main():
                 else:
                     print(f"Failed to insert sector data for {duration}")
             
+        # Add market data scraping and insertion
+        start_date = "2004-01-01"  # Start date for historical data
+        end_date = "2014-12-31"    # End date for historical data
+        
+        # Fetch market data for both indices
+        market_data = []
+        
+        # Fetch NIFTY50 data
+        nifty_data = fetch_historical_market_data(
+            start_date=start_date,
+            end_date=end_date,
+            symbol_id="17940",
+            index_name="NIFTY50"
+        )
+        if nifty_data:
+            market_data.extend(nifty_data)
+            time.sleep(2)  # Add delay between requests
+            
+        # Fetch BSE500 data
+        bse_data = fetch_historical_market_data(
+            start_date=start_date,
+            end_date=end_date,
+            symbol_id="39935",
+            index_name="BSE500"
+        )
+        if bse_data:
+            market_data.extend(bse_data)
+            
+        if market_data:
+            market_data_query = """
+                INSERT INTO market_data 
+                (index_name, date, open, high, low, close, volume, change_percent)
+                VALUES (%(index_name)s, %(date)s, %(open)s, %(high)s, %(low)s, 
+                        %(close)s, %(volume)s, %(change_percent)s)
+                ON CONFLICT (index_name, date) DO UPDATE SET
+                open = EXCLUDED.open,
+                high = EXCLUDED.high,
+                low = EXCLUDED.low,
+                close = EXCLUDED.close,
+                volume = EXCLUDED.volume,
+                change_percent = EXCLUDED.change_percent
+            """
+            
+            if execute_batch_query(market_data_query, market_data):
+                print(f"Successfully inserted {len(market_data)} market data records")
+            else:
+                print("Failed to insert market data")
+                
     except Exception as e:
         print(f"An error occurred in main: {str(e)}")
 
