@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bse-scraper-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bse-scraper
+  template:
+    metadata:
+      labels:
+        app: bse-scraper
+    spec:
+      containers:
+      - name: bse-scraper-container
+        image: asia-south1-docker.pkg.dev/resonant-augury-444206-f0/bse-docker/bse-scraper:v1
+        ports:
+        - containerPort: 80

@@ -6,6 +6,19 @@ import json
 from datetime import date, datetime, timedelta
 import time
 
+def lambda_handler(event, context):
+    try:
+        main()
+        return {
+            'statusCode': 200,
+            'body': json.dumps('Data scraping completed successfully')
+        }
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'body': json.dumps(f'Error occurred: {str(e)}')
+        }
+
 def main():
     try:
         # Get BSE 500 data and insert into database

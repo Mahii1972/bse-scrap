@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: bse-scraper-cronjob
+spec:
+  schedule: "30 10 * * *"  # 10:30 UTC = 4:00 PM IST
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: bse-scraper
+            image: asia-south1-docker.pkg.dev/resonant-augury-444206-f0/bse-docker/bse-scraper:v1
+            resources:
+              requests:
+                cpu: "500m"
+                memory: "2Gi"
+              limits:
+                ephemeral-storage: "1Gi"
+          restartPolicy: OnFailure
