@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
           - name: bse-scraper
-            image: asia-south1-docker.pkg.dev/resonant-augury-444206-f0/bse-docker/bse-scraper:v1
+            image: asia-south1-docker.pkg.dev/resonant-augury-444206-f0/bse-docker/bse-scraper:v2
             resources:
               requests:
                 cpu: "500m"

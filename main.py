@@ -83,8 +83,8 @@ def main():
                     print(f"Failed to insert sector data for {duration}")
             
         # Add market data scraping and insertion
-        start_date = "2004-01-01"  # Start date for historical data
-        end_date = "2014-12-31"    # End date for historical data
+        end_date = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
+        start_date = "2004-01-01"  # Keep the same start date
         
         # Fetch market data for both indices
         market_data = []
